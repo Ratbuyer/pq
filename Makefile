@@ -27,7 +27,7 @@ TARGETS := perf_meas unittests
 all:	$(TARGETS)
 
 clean:
-	rm -f $(TARGETS) core *.o
+	rm -f $(TARGETS) core *.o test
 
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -36,7 +36,11 @@ perf_meas: CFLAGS+=-DNDEBUG
 $(TARGETS): %: %.o ptst.o gc.o prioq.o common.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-test: unittests
+unittest: unittests
 	./unittests
+
+test:
+	make ptst.o gc.o prioq.o common.o
+	g++ -O3 -pthread test.cpp ptst.o gc.o prioq.o common.o -lm -lrt -o test
 
 .PHONY: all clean test
